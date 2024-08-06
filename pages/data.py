@@ -9,6 +9,7 @@
 import streamlit as st
 import pandas as pd
 from menu import show_sidebar
+from menu import data_sidebar
 
 ###################################### set  ######################################
 
@@ -25,22 +26,44 @@ st.session_state.current_page = "Data"
 
 # Call the sidebar function
 show_sidebar()
+data_sidebar()
 
-###################################### Data ######################################
+###################################### DataFrame ######################################
 
 # Access the data from session_state
 if 'df' in st.session_state:
     df = st.session_state.df
+    dtype_str = df.dtypes.apply(lambda x: x.name).to_dict()
+    st.session_state.dtype_str = dtype_str 
 else:
     df = None
+    dtype_str = None
 
 ###################################### Data ######################################
 
 # Title
 st.title("Data")
 
+# Data preview
 st.write("Data preview:")
 if df is not None:
     st.dataframe(df)
 else:
     st.markdown("**Please upload your file on the sidebar of Home page**")
+
+# Data types of columns
+if dtype_str is not None:
+    st.write("Data types of columns:")
+    st.dataframe(dtype_str)
+else:
+    st.write("No data available.")
+
+##################################### Overview ######################################
+
+
+
+##################################### Missing Values ######################################
+
+
+
+##################################### Outlier ######################################

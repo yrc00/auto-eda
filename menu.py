@@ -16,7 +16,7 @@ import pandas as pd
 def show_sidebar():
     st.sidebar.title("Navigation")
 
-    # page_link
+    # Page navigation
     st.sidebar.page_link("streamlit_app.py", label="Home")
     st.sidebar.page_link("pages/data.py", label="Data")
     st.sidebar.page_link("pages/visualization.py", label="Visualization")
@@ -29,12 +29,30 @@ def show_sidebar():
         uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
         if uploaded_file is not None:
             st.session_state.uploaded_file = uploaded_file
-            # Save the file in session state
-            st.session_state.df = pd.read_csv(uploaded_file)
-    else:
-        # If not on Home page, maintain the uploaded file and data in session state
-        uploaded_file = st.session_state.get('uploaded_file', None)
 
-    return uploaded_file
+            try:
+                df = pd.read_csv(uploaded_file)
+                st.session_state.df = df  # Store DataFrame in session_state
+
+                # Create a DataFrame with column data types
+                dtype_dict = df.dtypes.apply(lambda x: x.name).to_dict()
+                dtype_df = pd.DataFrame(list(dtype_dict.items()), columns=['Column', 'Dtype'])
+                st.session_state.dtype_df = dtype_df  # Store dtype DataFrame in session_state
+
+            except pd.errors.EmptyDataError:
+                st.error("The uploaded file is empty or not a valid CSV.")
+            except Exception as e:
+                st.error(f"An error occurred: {e}")
+
+    return st.session_state.get('uploaded_file', None)
 
 ###################################### Data sidebar ######################################
+
+def data_sidebar():
+    st.sidebar.text("Data")
+
+
+###################################### DType sidebar ######################################
+
+
+###################################### Chatbot sidebar ######################################

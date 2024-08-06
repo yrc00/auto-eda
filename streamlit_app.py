@@ -28,25 +28,61 @@ st.session_state.current_page = "Home"
 # Call the sidebar function to handle file upload
 uploaded_file = show_sidebar()
 
-###################################### Data ######################################
+###################################### DataFrame ######################################
 
 # Handle the uploaded file
 if uploaded_file is not None:
     if 'df' in st.session_state:
         df = st.session_state.df
+        dtype_df = st.session_state.dtype_df
     else:
         try:
+            # uploaded dataframe
             df = pd.read_csv(uploaded_file)
-            st.session_state.df = df  # Store DataFrame in session_state
+            st.session_state.df = df
+
+            # dtype dataframe
+            dtype_dict = df.apply(get_dtype).to_dict()
+            dtype_df = pd.DataFrame(list(dtype_dict.items()), columns=['Column', 'DType'])  
+            dtype_df.set_index('Column', inplace=True)
+            st.session_state.dtype_df = dtype_df
+
         except pd.errors.EmptyDataError:
             st.error("The uploaded file is empty or not a valid CSV.")
+
         except Exception as e:
             st.error(f"An error occurred: {e}")
 else:
     if 'df' in st.session_state:
         df = st.session_state.df
+        dtype_df = st.session_state.dtype_df
     else:
         df = None
+        dtype_df = None
+
+# dtype
+def get_dtype(column):
+    categorical = ['object', 'category']
+    numerical = ['int64', 'float64']
+    datetime = ['datetime']
+    bool_ = ['bool']
+    string = ['str']
+
+    dtype_str = str(column.dtype)
+    
+    if dtype_str in categorical:
+        return 'Categorical'
+    elif dtype_str in numerical:
+        return 'Numerical'
+    elif dtype_str in datetime:
+        return 'Datetime'
+    elif dtype_str in bool_:
+        return 'Boolean'
+    elif dtype_str in string:
+        return 'String'
+    else:
+        return 'Other'
+
 
 ###################################### Home ######################################
 
@@ -78,7 +114,18 @@ st.markdown(
     """
 )
 
+# Data preview
+st.write("Data preview:")
 if df is not None:
     st.dataframe(df)
 else:
-    st.markdown("**Please upload your file on the sidebar**")
+    st.markdown("**Please upload your file on the sidebar of Home page**")
+
+###################################### Overview ######################################
+
+
+###################################### Missing Values ######################################
+
+
+###################################### Outlier ######################################
+
