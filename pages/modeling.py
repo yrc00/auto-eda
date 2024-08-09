@@ -6,57 +6,65 @@
 
 ###################################### import ######################################
 
+# library
 import streamlit as st
 import pandas as pd
-from menu import show_sidebar
+
+# functions
+from menu import file_upload, menu
 
 ###################################### set  ######################################
 
 # set page config
 st.set_page_config(
     page_title="Modeling",
-    page_icon="🔎",
+    page_icon=":material/smart_toy:",
     layout="centered")
 
 # set the current page context
-st.session_state.current_page = "Visualization"
-
-###################################### Sidebar ######################################
-
-# Call the sidebar function
-show_sidebar()
-
-###################################### Data ######################################
-
-# Access the data from session_state
-if 'df' in st.session_state:
-    df = st.session_state.df
-    dtype_str = df.dtypes.apply(lambda x: x.name).to_dict()
-    st.session_state.dtype_str = dtype_str 
-else:
-    df = None
-    dtype_str = None
-
-###################################### Modeling ######################################
-
-# Title
-st.title("Modeling")
-
-# Data preview
-st.write("Data preview:")
-if df is not None:
-    st.dataframe(df)
-else:
-    st.markdown("**Please upload your file on the sidebar of Home page**")
-
-# Data types of columns
-if dtype_str is not None:
-    st.write("Data types of columns:")
-    st.dataframe(dtype_str)
-else:
-    st.write("No data available.")
+st.session_state.current_page = "Modeling"
 
 ###################################### Supervised ######################################
 
+def supervised_page():
+    st.markdown("### Supervised")
 
 ###################################### UnSupervised ######################################
+
+def unsupervised_page():
+    st.markdown("### Unsupervised")
+
+###################################### Modeling ######################################
+
+def modeling_page():
+    st.title("Modeling")
+
+    if 'df' in st.session_state:
+        df = st.session_state.df
+        dtype_df = st.session_state.dtype_df
+
+        tab1, tab2 = st.tabs(['Supervised', 'Unsupervised'])
+
+        with tab1:
+            supervised_page()
+        
+        with tab2:
+            unsupervised_page()
+        
+    else:
+        st.warning("**Please upload your file on the sidebar of Home page**")
+
+###################################### Contents ######################################
+
+# menu
+menu()
+
+# file uploader
+file_uploaded = file_upload()
+
+# visualization_page
+modeling_page()
+
+# Check if the file was uploaded and trigger the re-render
+if file_uploaded:
+    st.experimental_rerun()
