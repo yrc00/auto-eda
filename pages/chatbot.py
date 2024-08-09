@@ -6,52 +6,40 @@
 
 ###################################### import ######################################
 
+# library
 import streamlit as st
 import pandas as pd
-from menu import show_sidebar
+
+# functions
+from menu import file_upload, menu
 
 ###################################### set  ######################################
 
 # set page config
 st.set_page_config(
     page_title="Chatbot",
-    page_icon="🤖",
+    page_icon=":material/chat:",
     layout="centered")
 
 # set the current page context
-st.session_state.current_page = "Visualization"
-
-###################################### Sidebar ######################################
-
-# Call the sidebar function
-show_sidebar()
-
-###################################### Data ######################################
-
-# Access the data from session_state
-if 'df' in st.session_state:
-    df = st.session_state.df
-    dtype_str = df.dtypes.apply(lambda x: x.name).to_dict()
-    st.session_state.dtype_str = dtype_str 
-else:
-    df = None
-    dtype_str = None
+st.session_state.current_page = "chatbot"
 
 ###################################### Chatbot ######################################
 
-# Title
-st.title("Chatbot")
+def chatbot_page():
+    st.title("Chatbot")
 
-# Data preview
-st.write("Data preview:")
-if df is not None:
-    st.dataframe(df)
-else:
-    st.markdown("**Please upload your file on the sidebar of Home page**")
+###################################### Contents ######################################
 
-# Data types of columns
-if dtype_str is not None:
-    st.write("Data types of columns:")
-    st.dataframe(dtype_str)
-else:
-    st.write("No data available.")
+# menu
+menu()
+
+# file uploader
+file_uploaded = file_upload()
+
+# chatbot page
+chatbot_page()
+
+# Check if the file was uploaded and trigger the re-render
+if file_uploaded:
+    st.experimental_rerun()

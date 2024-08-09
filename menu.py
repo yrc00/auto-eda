@@ -8,49 +8,79 @@ The page files are in the pages folder, and the main streamlit app is in the str
 
 ###################################### import ######################################
 
+# library
 import streamlit as st
+import streamlit_option_menu as option_menu
 import pandas as pd
 
-###################################### Sidebar ######################################
+###################################### file upload ######################################
 
-def show_sidebar():
-    st.sidebar.title("Navigation")
+# divide data types of columns
+def get_dtype(column):
+    categorical = ['object', 'category']
+    numerical = ['int64', 'float64']
+    datetime = ['datetime64']
+    bool_ = ['bool']
+    string = ['str']
 
-    # Page navigation
-    st.sidebar.page_link("streamlit_app.py", label="Home")
-    st.sidebar.page_link("pages/data.py", label="Data")
-    st.sidebar.page_link("pages/visualization.py", label="Visualization")
-    st.sidebar.page_link("pages/correlation.py", label="Correlation")
-    st.sidebar.page_link("pages/modeling.py", label="Modeling")
-    st.sidebar.page_link("pages/chatbot.py", label="Chatbot")
+    dtype_str = str(column.dtype)
+    
+    if dtype_str in categorical:
+        return 'Categorical'
+    elif dtype_str in numerical:
+        return 'Numerical'
+    elif dtype_str in datetime:
+        return 'Datetime'
+    elif dtype_str in bool_:
+        return 'Boolean'
+    elif dtype_str in string:
+        return 'String'
+    else:
+        return 'Other'
 
-    # File uploader (only on Home page)
-    if st.session_state.get('current_page') == "Home":
-        uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
-        if uploaded_file is not None:
-            st.session_state.uploaded_file = uploaded_file
+# file uploader
+def file_upload():
+    # file uploader in sidebar
+    uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
 
-            try:
-                df = pd.read_csv(uploaded_file)
-                st.session_state.df = df  # Store DataFrame in session_state
+    if uploaded_file is not None:
+        try:
+            # load uploaded file
+            df = pd.read_csv(uploaded_file)
+            st.session_state.df = df
 
-                # Create a DataFrame with column data types
-                dtype_dict = df.dtypes.apply(lambda x: x.name).to_dict()
-                dtype_df = pd.DataFrame(list(dtype_dict.items()), columns=['Column', 'Dtype'])
-                st.session_state.dtype_df = dtype_df  # Store dtype DataFrame in session_state
+            # get data types and create dtype_df
+            dtype_dict = df.apply(get_dtype).to_dict()
+            dtype_df = pd.DataFrame(list(dtype_dict.items()), columns=['Column', 'DType'])
+            dtype_df.set_index('Column', inplace=True)
+            st.session_state.dtype_df = dtype_df
+        
+        except pd.errors.EmptyDataError:
+            st.error("The uploaded file is empty or not a valid CSV.")
+        
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
 
-            except pd.errors.EmptyDataError:
-                st.error("The uploaded file is empty or not a valid CSV.")
-            except Exception as e:
-                st.error(f"An error occurred: {e}")
+###################################### menu ######################################
 
-    return st.session_state.get('uploaded_file', None)
+# print menu
+def menu():
+    with st.sidebar:
+        st.title("Auto EDA")
+
+        # pages
+        st.page_link("streamlit_app.py", label="Home", icon=":material/home:")
+        st.page_link("pages/data.py", label="Data", icon=":material/database:")
+        st.page_link("pages/visualization.py", label="Visualization", icon=":material/monitoring:")
+        st.page_link("pages/correlation.py", label="Correlation", icon=":material/link:")
+        st.page_link("pages/modeling.py", label="Modeling", icon=":material/smart_toy:")
+        st.page_link("pages/chatbot.py", label="Chatbot", icon=":material/chat:")
 
 ###################################### Data sidebar ######################################
 
+# data sidedbar
 def data_sidebar():
     st.sidebar.text("Data")
-
 
 ###################################### DType sidebar ######################################
 
