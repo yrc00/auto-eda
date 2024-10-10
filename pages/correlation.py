@@ -35,11 +35,8 @@ translator = gettext.translation('base', localedir=locale_path, languages=[st.se
 translator.install()
 _ = translator.gettext
 
-# load the .env file
-load_dotenv()
-
 # get the API token from the environment
-huggingface_token = os.getenv('HUGGINGFACEHUB_API_TOKEN')
+huggingface_token = st.secrets.get("HUGGINGFACEHUB_API_TOKEN")
 
 if huggingface_token:
     os.environ['HUGGINGFACEHUB_API_TOKEN'] = huggingface_token
@@ -417,11 +414,11 @@ def heatmap_slm(df):
 def plot_heatmap(df, correlation_method):
     cor_matrix = df.corr(method=correlation_method)
     mask = np.triu(np.ones_like(cor_matrix, dtype=bool), k=1)
-    cor_figure = plt.figure(figsize=(10, 10))
+    cor_figure = plt.figure(figsize=(6, 6))
     sns.heatmap(cor_matrix, annot=True, mask=mask, fmt=".2f", cmap='coolwarm', square=True)
     st.pyplot(cor_figure)
 
-# correlation heatmap page
+# correlation heatmap pages
 def heatmap(df):
     # title
     st.markdown("### Correlation Heatmap")

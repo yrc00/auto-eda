@@ -169,6 +169,8 @@ def dtype_editor():
     else:
         st.warning("Please upload a CSV file to edit.")
 
+###################################### data preview ######################################
+
 # print preview
 def data_preview():
     df = st.session_state.df

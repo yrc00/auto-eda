@@ -36,11 +36,8 @@ translator = gettext.translation('base', localedir=locale_path, languages=[st.se
 translator.install()
 _ = translator.gettext
 
-# load the .env file
-load_dotenv()
-
 # get the API token from the environment
-huggingface_token = os.getenv('HUGGINGFACEHUB_API_TOKEN')
+huggingface_token = st.secrets.get("HUGGINGFACEHUB_API_TOKEN")
 
 if huggingface_token:
     os.environ['HUGGINGFACEHUB_API_TOKEN'] = huggingface_token
