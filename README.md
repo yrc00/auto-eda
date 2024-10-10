@@ -18,7 +18,7 @@ The project consists of data, reviews, visualization, correlation, and modeling 
 
 ### How to Use
 
-You can check the demo application at this [link] (https://auto-eda.streamlit.app/).
+You can check the demo application at this [link](https://auto-eda.streamlit.app/).
 
 If you would like to test in your local environment, please follow the steps below:
 
@@ -58,7 +58,9 @@ streamlit run app.py
 
 ---
 
-Auto-EDA 프로제트를 위한 레포지토리입니다.
+## Auto-EDA 프로젝트
+
+Auto-EDA 프로젝트를 위한 레포지토리입니다.
 
 CSV 파일을 업로드해서 탐색적 데이터 분석 (EDA)의 결과를 쉽게 얻을 수 있습니다.
 
