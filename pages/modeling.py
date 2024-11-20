@@ -20,7 +20,7 @@ from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.tree import DecisionTreeClassifier, DecisionTreeRegressor
 from xgboost import XGBClassifier, XGBRegressor
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.metrics import root_mean_squared_error, mean_absolute_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.cluster import DBSCAN, KMeans
 from sklearn.decomposition import PCA
 
@@ -74,12 +74,13 @@ def regressor_model(df, target, model, test_size, random_state):
     y_pred = model.predict(X_test)
 
     # calculate metrics
-    rmse = root_mean_squared_error(y_test, y_pred)
+    mse = mean_squared_error(y_test, y_pred)
+    rmse = np.sqrt(mse)
     mae = mean_absolute_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
     top15 = pd.Series(model.feature_importances_, index=X.columns).nlargest(15)
 
-    return rmse, mae, r2, top15
+    return mse, rmse, mae, r2, top15
 
 # plot feature importance
 def plot_feature_importances(top15, model_name):
@@ -198,12 +199,12 @@ def supervised(df, target):
                         elif model_name == "XGBoost":
                             model = XGBRegressor
 
-                        rmse, mae, r2, top15 = regressor_model(df, target, model, test_size, random_state)
+                        mse, rmse, mae, r2, top15 = regressor_model(df, target, model, test_size, random_state)
                         
                         # store the result with metadata
                         st.session_state.supervised_results.append(
                             {
-                                "metrics": {"Model": model_name, "Test Size": test_size, "Random State": random_state, "Type": "Regression", "RMSE": rmse, "MAE": mae, "R2": r2},
+                                "metrics": {"Model": model_name, "Test Size": test_size, "Random State": random_state, "Type": "Regression", "MSE": mse, "RMSE": rmse, "MAE": mae, "R2": r2},
                                 "top15": top15
                             }
                         )
@@ -212,8 +213,8 @@ def supervised(df, target):
                             plot_feature_importances(top15, model_name)
 
                     # convert results to dataframe and display
-                    results_df = pd.DataFrame(results, columns=["Model", "RMSE", "MAE", "R2"])
-                    st.dataframe(results_df.style.highlight_min(["RMSE", "MAE"], axis=0))
+                    results_df = pd.DataFrame(results, columns=["Model", "MSE", "RMSE", "MAE", "R2"])
+                    st.dataframe(results_df.style.highlight_min(["MSE", "RMSE", "MAE"], axis=0))
 
     # Display all stored results in a separate container
     if st.session_state.supervised_results:
@@ -227,7 +228,7 @@ def supervised(df, target):
             if model_type == "Classification":
                 metrics_options = ["Accuracy", "Precision", "Recall", "F1"]
             else:  # Regression
-                metrics_options = ["RMSE", "MAE", "R2"]
+                metrics_options = ["MSE", "RMSE", "MAE", "R2"]
             
             sort_by = st.selectbox("Sort by", metrics_options, index=0)
 

@@ -266,9 +266,10 @@ def overview(df, dtype_df):
             st.dataframe(df[df.duplicated()])
     
     # show explanation
-    response = overview_slm()
-    txt = st.text_area("LLM response", response, height=500)
-    st.write(f"Response: {len(txt)} characters.")
+    if st.session_state.llm_response:
+        response = overview_slm()
+        txt = st.text_area("LLM response", response, height=500)
+        st.write(f"Response: {len(txt)} characters.")
 
 ##################################### Missing Values ######################################
 
@@ -378,9 +379,10 @@ def missing_values(df):
     st.session_state.missing_table = missing_table
 
     # missing values explanation
-    response = missing_values_slm()
-    txt = st.text_area("LLM response", response, height=500)
-    st.write(f"Response: {len(txt)} characters.")
+    if st.session_state.llm_response:
+        response = missing_values_slm()
+        txt = st.text_area("LLM response", response, height=500)
+        st.write(f"Response: {len(txt)} characters.")
 
 ##################################### Outlier ######################################
 
@@ -562,9 +564,10 @@ def outlier(df, dtype_df):
         st.pyplot(boxplot_fig)
     
     # outlier explanation
-    response = outlier_slm()
-    txt = st.text_area("LLM response", response, height=500)
-    st.write(f"Response: {len(txt)} characters.")
+    if st.session_state.llm_response:
+        response = outlier_slm()
+        txt = st.text_area("LLM response", response, height=500)
+        st.write(f"Response: {len(txt)} characters.")
 
 ##################################### Overview Page ######################################
 

@@ -183,9 +183,10 @@ def pairplot(df):
         st.pyplot(pairplot_fig)
 
     # show explanation
-    response = pairplot_slm(df)
-    txt = st.text_area("LLM response", response, height=500)
-    st.write(f"Response: {len(txt)} characters.")
+    if st.session_atate.llm_response:
+        response = pairplot_slm(df)
+        txt = st.text_area("LLM response", response, height=500)
+        st.write(f"Response: {len(txt)} characters.")
 
 ##################################### Scatter Plot ######################################
 
@@ -277,9 +278,10 @@ def scatter(df):
         st.pyplot(scatter_fig)
     
     # show explanation
-    response = scatter_slm(df, x, y)
-    txt = st.text_area("LLM response", response, height=500)
-    st.write(f"Response: {len(txt)} characters.")
+    if st.session_state.llm_response:
+        response = scatter_slm(df, x, y)
+        txt = st.text_area("LLM response", response, height=500)
+        st.write(f"Response: {len(txt)} characters.")
 
 ##################################### Correlation Heatmap ######################################
 
@@ -328,8 +330,7 @@ def heatmap_slm(df):
     {normality_table}
 
     Based on the normality test results, which correlation method should be used? (Pearson, Spearman, or Kendall)
-
-    Answer:
+    Answer the question in the following format: "Answer: {method}"
     """
 
     template_2 = """
@@ -375,7 +376,7 @@ def heatmap_slm(df):
 
     response_start = response_text_1.find("Answer:")
     if response_start != -1:
-        method_choice = response_text_1[response_start + len("Answer:"):].strip().lower()
+        method_choice = response_text_1[response_start + len("Answer:"):].strip().split()[0].lower()
         response_text = f"Selected method: {method_choice}\n"
     else:
         response_text = "No 'Answer 1:' found in the response.\n"
@@ -443,9 +444,10 @@ def heatmap(df):
             plot_heatmap(df, 'kendall')
     
     # show explanation
-    response = heatmap_slm(df)
-    txt = st.text_area("LLM response", response, height=500)
-    st.write(f"Response: {len(txt)} characters.")
+    if st.session_state.llm_response:
+        response = heatmap_slm(df)
+        txt = st.text_area("LLM response", response, height=500)
+        st.write(f"Response: {len(txt)} characters.")
 
 ##################################### Correlation Page ######################################
 
